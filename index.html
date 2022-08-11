@@ -1,0 +1,181 @@
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple CRUD - Golang</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="dist/css/adminlte.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="plugins/sweetalert2/sweetalert2.css">
+  
+</head>
+
+<body class="layout-top-nav dark-mode text-sm">
+<nav class="main-header navbar navbar-expand-md navbar-dark navbar-primary">
+    <div class="container">
+      <label class="navbar-brand">
+        <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" width="30px">
+        <span class="brand-text font-weight-light">Digitalent</span>
+      </label> 
+
+      <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <!-- Left navbar links -->
+
+        <!-- SEARCH FORM -->
+        <form class="form-inline ml-0 ml-md-3">
+          <div class="input-group input-group-sm">
+            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+              <button class="btn btn-navbar" type="submit">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Right navbar links -->
+      <ul class="order-1 order-md-3 navbar-nav navbar-no-expand ml-auto">
+        <!-- Notifications Dropdown Menu -->
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#">
+            <i class="fa fa-cogs"></i>
+          </a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="dropdown-item" href="#" role="button" onclick="loginModal();">
+            <i class="fas fa-user"></i> Sign In
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+<div class="wrapper">
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"> Project Golang <small>by Ade Sopiyan</small></h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              
+              <li class="breadcrumb-item active">Kelas 3-1</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container">
+      
+            <div class="card card-primary card-outline">
+              <div class="card-header">
+                <h5 class="card-title m-0">Task Management</h5>
+              </div>
+              <div class="card-body">
+                <div class="form-group">  
+                  <button class="btn btn-sm btn-primary" onclick="clearModal();" data-toggle="modal" data-target="#myModal"> <i class="fa fa-plus"></i> New Entry</button>     
+                </div>  
+                  <table id="example1" class="table table-bordered table-hover text-sm">
+                      <thead>
+                      <tr>
+                        <th>Task</th>
+                        <th>Asignee</th>
+                        <th>Deadline</th>
+                        <th class="col-md-1" nowrap="">Action</th>
+                      </tr>
+                      </thead>
+                      <tbody id="tbody">
+                        
+                      </tbody>
+                  </table>
+                
+              </div>  
+            </div>
+          
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content -->
+
+  </div>
+  <!-- /.content-wrapper -->
+
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+<script src="plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/demo.js"></script>
+<!-- SweetAlert2 -->
+<script src="plugins/sweetalert2/sweetalert2.all.js"></script>
+<!-- jQuery -->
+<script type="text/javascript">
+  
+  /*$.get("http://localhost:8080/tasks", function (data, status) {
+        
+        var data = JSON.parse(data);
+        alert(data);
+        for (let i = 0; i < data.length; i++) {
+          
+          $("#tbody").append(
+            `<tr>
+              <td>${data[i].task} </td> 
+              <td>${data[i].assignedTo} </td>
+              <td>${data[i].deadline} </td>
+              <td><a href="http://localhost:8000/tasks/${data.data[i].id}/delete">Hapus</a></li></td>
+              </tr>`
+          );
+        }
+  });*/
+$(document).ready(function () {
+  $.ajax({
+            url: "http://localhost:8080/tasks",
+            crossOrigin: true,
+            type: 'GET',
+            dataType: "jsonp",
+            xhrFields: { withCredentials: true },
+            accept: 'application/json'
+        }).done(function (data) {
+            alert(data);                
+        }).fail(function (xhr, textStatus, error) {
+            var title, message;
+            switch (xhr.status) {
+                case 403:
+                    title = xhr.responseJSON.errorSummary;
+                    message = 'Please login to your server before running the test.';
+                    break;
+                default:
+                    title = 'Invalid URL or Cross-Origin Request Blocked';
+                    message = 'You must explictly add this site (' + window.location.origin + ') to the list of allowed websites in your server.';
+                    break;
+            }
+        })
+ });        
+
+</script>
+</body>
+</html>
